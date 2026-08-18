@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DIAGNOSTIC_ROUTE } from "@/lib/cta";
+import { DIAGNOSTIC_HREF, DIAGNOSTIC_IS_EXTERNAL } from "@/lib/cta";
 
 type Variant = "primary" | "secondary";
 
@@ -12,7 +12,7 @@ const VARIANT_CLASSES: Record<Variant, string> = {
 
 // Único ponto de entrada para o diagnóstico. Toda seção da landing usa este
 // componente em vez de conhecer a rota ou o Typebot diretamente — trocar o
-// destino (popup, drawer, outro fluxo) no futuro é uma mudança neste arquivo.
+// destino (popup, drawer, rota interna) no futuro é uma mudança em src/lib/cta.ts.
 export function DiagnosticCTA({
   children,
   variant = "primary",
@@ -25,7 +25,13 @@ export function DiagnosticCTA({
   onClick?: () => void;
 }) {
   return (
-    <Link href={DIAGNOSTIC_ROUTE} className={className ?? VARIANT_CLASSES[variant]} onClick={onClick}>
+    <Link
+      href={DIAGNOSTIC_HREF}
+      target={DIAGNOSTIC_IS_EXTERNAL ? "_blank" : undefined}
+      rel={DIAGNOSTIC_IS_EXTERNAL ? "noopener noreferrer" : undefined}
+      className={className ?? VARIANT_CLASSES[variant]}
+      onClick={onClick}
+    >
       {children}
     </Link>
   );

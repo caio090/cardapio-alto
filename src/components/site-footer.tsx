@@ -32,6 +32,12 @@ export function SiteFooter() {
             <Link href="/entrar" className="font-medium text-ink transition-colors hover:text-ink-accent">
               Entrar
             </Link>
+            <Link
+              href="/politica-de-privacidade"
+              className="font-medium text-ink transition-colors hover:text-ink-accent"
+            >
+              Política de Privacidade
+            </Link>
           </div>
         </div>
 

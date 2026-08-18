@@ -4,9 +4,17 @@
 export const TYPEBOT_URL = "https://typebot.co/diagn-stico-card-pio-alto-u8npp5o";
 export const TYPEBOT_SLUG = "diagn-stico-card-pio-alto-u8npp5o";
 
-// Rota interna única para onde todo CTA de diagnóstico aponta — nenhuma
-// seção da landing conhece o Typebot diretamente. Ver <DiagnosticCTA />.
+// Rota interna planejada (embed do Typebot) — ainda não construída.
+// Nenhuma seção da landing deve apontar pra ela diretamente enquanto isso;
+// usar DIAGNOSTIC_HREF abaixo, que sempre resolve pra um destino real.
 export const DIAGNOSTIC_ROUTE = "/diagnostico";
+
+// Enquanto /diagnostico não existir, todo CTA de diagnóstico vai direto
+// pro Typebot externo (nova aba) em vez de cair num link quebrado.
+// Trocar para DIAGNOSTIC_ROUTE assim que o embed estiver no ar — é o
+// único lugar que precisa mudar (ver <DiagnosticCTA />).
+export const DIAGNOSTIC_HREF = TYPEBOT_URL;
+export const DIAGNOSTIC_IS_EXTERNAL = true;
 
 // WhatsApp real do Cardápio Alto — canal de contato direto, separado do
 // fluxo de diagnóstico (que continua exclusivamente pelo Typebot).

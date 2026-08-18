@@ -2,21 +2,18 @@ import { DiagnosticCTA } from "./diagnostic-cta";
 
 export function CtaSection() {
   return (
-    <section className="relative overflow-hidden border-t border-border bg-bg-deep py-28 sm:py-36">
-      <div className="relative mx-auto max-w-3xl px-6 text-center sm:px-8">
-        <h2 className="text-[clamp(2rem,4.5vw,3.5rem)] font-black leading-tight text-heading">
+    <section className="bg-navy py-20 sm:py-24">
+      <div className="mx-auto max-w-2xl px-6 text-center sm:px-8">
+        <h2 className="text-[clamp(1.85rem,4vw,3rem)] font-black leading-tight text-heading">
           Quanto o seu negócio pode estar deixando na mesa?
         </h2>
-        <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-muted">
+        <p className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-navy-muted sm:text-lg">
           O primeiro passo é entender onde seu delivery pode vender melhor.
         </p>
 
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+        <div className="mt-8">
           <DiagnosticCTA>Fazer meu diagnóstico</DiagnosticCTA>
         </div>
-        <p className="mt-4 text-sm text-muted">
-          Comece respondendo algumas perguntas sobre o seu negócio.
-        </p>
       </div>
     </section>
   );

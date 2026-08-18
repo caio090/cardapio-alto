@@ -26,6 +26,20 @@
   --primary-strong: oklch(0.4 0.24 264);
   --on-fill: oklch(0.99 0 0);
 
+  /* Chapter backgrounds — the body alternates between these and the
+     orange ramp above so sections read as distinct chapters instead of
+     one long red wall. --ink/--muted (dark) already read fine on cream
+     (even better contrast than on orange); --heading-dark is for
+     headings specifically, since --heading is reserved white. */
+  --cream: oklch(0.986 0.007 80);
+  --cream-border: oklch(0.88 0.015 60);
+  --heading-dark: oklch(0.14 0.02 60);
+
+  --navy: oklch(0.24 0.09 264);
+  --navy-2: oklch(0.3 0.095 264);
+  --navy-border: oklch(0.4 0.1 264);
+  --navy-muted: oklch(0.8 0.03 264);
+
   --font-display: "Cabinet Grotesk", ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -43,6 +57,13 @@
   --color-primary: var(--primary);
   --color-primary-strong: var(--primary-strong);
   --color-on-fill: var(--on-fill);
+  --color-cream: var(--cream);
+  --color-cream-border: var(--cream-border);
+  --color-heading-dark: var(--heading-dark);
+  --color-navy: var(--navy);
+  --color-navy-2: var(--navy-2);
+  --color-navy-border: var(--navy-border);
+  --color-navy-muted: var(--navy-muted);
   --font-sans: var(--font-display);
   --font-display: var(--font-display);
 }
@@ -107,4 +128,105 @@ h3 {
 
 .animate-rise {
   animation: rise-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes line-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.4em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-line {
+  animation: line-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+.animate-pop {
+  animation: pop-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Orbit mechanics: a zero-size pivot at the ring's center rotates; its arm
+   is a static radius offset; a counter-rotating wrapper inside the arm
+   cancels the pivot's spin so the item itself never appears upside down. */
+@keyframes orbit-spin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes orbit-counter-spin {
+  from {
+    transform: translateY(-50%) rotate(0deg);
+  }
+  to {
+    transform: translateY(-50%) rotate(-360deg);
+  }
+}
+
+.orbit-pivot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  animation-name: orbit-spin;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.orbit-arm {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.orbit-counter {
+  animation-name: orbit-counter-spin;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  /* animation-duration is set inline per instance, matching .orbit-pivot's
+     duration exactly — CSS inheritance can't bridge the intermediate
+     .orbit-arm reliably, so both elements get the same value directly. */
+}
+
+.orbit-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border: 1px solid oklch(0.3 0.05 30 / 18%);
+  border-radius: 9999px;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee-scroll 30s linear infinite;
 }

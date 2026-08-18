@@ -13,6 +13,10 @@ export interface DiagnosticNotificationInput {
   city?: string;
   state?: string;
   source?: string;
+  principalChallenge?: string;
+  averageTicket?: string;
+  orderChannel?: string;
+  paidTraffic?: string;
 }
 
 const FALLBACK = "Não informado";
@@ -29,29 +33,59 @@ function escapeHtml(value: string): string {
     .replace(/>/g, "&gt;");
 }
 
-function buildMessage(input: DiagnosticNotificationInput): string {
-  const location = [input.city, input.state].filter(Boolean).join(" / ");
+// Presentation-only: builds a wa.me link. Never mutates the phone value
+// that gets stored — this is purely for the "ABRIR WHATSAPP" link text.
+function whatsappLink(phone: string | undefined): string | null {
+  if (!phone) return null;
+  const digits = phone.replace(/\D/g, "");
+  if (!digits) return null;
+  // Already has a country code (13 digits: 55 + 2-digit DDD + 9-digit
+  // mobile, or 12 without the mobile "9") — use as-is. Otherwise assume a
+  // Brazilian local number and prefix 55.
+  const withCountry = digits.startsWith("55") && digits.length >= 12 ? digits : `55${digits}`;
+  return `https://wa.me/${withCountry}`;
+}
 
-  return [
+// Presentation-only: strips a full profile URL down to "@handle".
+function instagramHandle(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  const stripped = value
+    .replace(/^https?:\/\/(www\.)?instagram\.com\//i, "")
+    .replace(/\/$/, "")
+    .replace(/^@/, "");
+  return stripped ? `@${stripped}` : undefined;
+}
+
+function buildMessage(input: DiagnosticNotificationInput): string {
+  const location = [input.city, input.state].filter(Boolean).join(" - ");
+  const waLink = whatsappLink(input.phone);
+  const igHandle = instagramHandle(input.instagram);
+
+  const lines = [
     "🍽️ <b>NOVO DIAGNÓSTICO</b>",
     "CARDÁPIO ALTO",
     "",
-    `<b>Nome:</b>\n${field(input.name)}`,
+    `👤 <b>Contato:</b> ${field(input.name)}`,
+    `🏪 <b>Negócio:</b> ${field(input.businessName)}`,
+    `📍 <b>Cidade:</b> ${location ? escapeHtml(location) : FALLBACK}`,
+    waLink
+      ? `📱 <b>WhatsApp:</b> ${field(input.phone)} — <a href="${waLink}">ABRIR WHATSAPP</a>`
+      : `📱 <b>WhatsApp:</b> ${field(input.phone)}`,
+    `📷 <b>Instagram:</b> ${igHandle ? escapeHtml(igHandle) : FALLBACK}`,
     "",
-    `<b>Negócio:</b>\n${field(input.businessName)}`,
+    "<b>DIAGNÓSTICO</b>",
     "",
-    `<b>Tipo:</b>\n${field(input.businessType)}`,
+    `Segmento: ${field(input.businessType)}`,
+    `Principal desafio: ${field(input.principalChallenge)}`,
+    `Ticket médio: ${field(input.averageTicket)}`,
+    `Canal de pedidos: ${field(input.orderChannel)}`,
+    `Tráfego pago: ${field(input.paidTraffic)}`,
     "",
-    `<b>WhatsApp:</b>\n${field(input.phone)}`,
-    "",
-    `<b>Instagram:</b>\n${field(input.instagram)}`,
-    "",
-    `<b>Cidade:</b>\n${location ? escapeHtml(location) : FALLBACK}`,
-    "",
-    `<b>Origem:</b>\n${field(input.source)}`,
-    "",
-    "<b>Status:</b>\nNovo lead",
-  ].join("\n");
+    `Origem: ${field(input.source)}`,
+    "Status: NOVO LEAD",
+  ];
+
+  return lines.join("\n");
 }
 
 export type SendDiagnosticNotificationResult =
@@ -79,6 +113,7 @@ export async function sendDiagnosticNotification(
         chat_id: chatId,
         text: buildMessage(input),
         parse_mode: "HTML",
+        disable_web_page_preview: true,
       }),
     });
 

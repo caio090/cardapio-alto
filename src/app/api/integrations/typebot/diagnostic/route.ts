@@ -10,20 +10,33 @@ const MAX_BODY_BYTES = 100_000;
 const MAX_FIELD_LENGTH = 500;
 
 interface DiagnosticPayload {
+  // Contato / negócio
   name?: unknown;
   phone?: unknown;
+  email?: unknown;
   businessName?: unknown;
   businessType?: unknown;
   instagram?: unknown;
   city?: unknown;
   state?: unknown;
-  email?: unknown;
+  // Diagnóstico — preservados em diagnostics.raw_payload/summary, não
+  // viram colunas novas em leads nesta execução.
+  principalChallenge?: unknown;
+  averageTicket?: unknown;
+  orderChannel?: unknown;
+  paidTraffic?: unknown;
+  // Aquisição
   source?: unknown;
   utm_source?: unknown;
   utm_medium?: unknown;
   utm_campaign?: unknown;
   utm_content?: unknown;
   utm_term?: unknown;
+  gclid?: unknown;
+  fbclid?: unknown;
+  landing_page?: unknown;
+  referrer?: unknown;
+  // Identificador
   typebot_result_id?: unknown;
   variables?: Record<string, unknown>;
 }
@@ -38,6 +51,10 @@ function normalizeString(value: unknown): string | undefined {
 // Typebot's HTTP Request block can send fields at the top level or nested
 // under a "variables" object depending on how the request body is built in
 // the flow — accept either shape so we don't depend on one exact layout.
+// This is the normalized contract: whatever the real Typebot variable names
+// turn out to be, that mapping happens on the Typebot side (HTTP Request
+// block body), not here — the backend never depends on Typebot's internal
+// naming.
 function pick(payload: DiagnosticPayload, key: keyof DiagnosticPayload): string | undefined {
   return normalizeString(payload[key]) ?? normalizeString(payload.variables?.[key as string]);
 }
@@ -87,11 +104,25 @@ export async function POST(request: NextRequest) {
     typebot_result_id: pick(payload, "typebot_result_id"),
   };
 
-  // UTMs: prefer whatever Typebot passed through in the payload (only
-  // possible if the flow was configured with prefilled variables from
-  // /diagnostico's query string); fall back to our own first-touch cookie,
-  // which is only present when the caller is the visitor's own browser —
-  // a server-to-server call from Typebot's backend won't have it.
+  // Diagnostic-specific answers — not lead columns, preserved on the
+  // diagnostics row (raw_payload always; summary as a readable digest).
+  const diagnosticAnswers = {
+    principalChallenge: pick(payload, "principalChallenge"),
+    averageTicket: pick(payload, "averageTicket"),
+    orderChannel: pick(payload, "orderChannel"),
+    paidTraffic: pick(payload, "paidTraffic"),
+  };
+  const summary = Object.entries(diagnosticAnswers)
+    .filter(([, v]) => v)
+    .map(([k, v]) => `${k}: ${v}`)
+    .join(" | ") || null;
+
+  // UTMs / click IDs / landing page / referrer: prefer whatever Typebot
+  // passed through in the payload (only possible if the flow was
+  // configured with prefilled variables from /diagnostico's query string);
+  // fall back to our own first-touch cookie, which is only present when
+  // the caller is the visitor's own browser — a server-to-server call
+  // from Typebot's backend won't have it.
   const cookieStore = await cookies();
   const cookieAttribution = parseAttributionCookie(
     cookieStore.get(ATTRIBUTION_COOKIE)?.value
@@ -103,10 +134,10 @@ export async function POST(request: NextRequest) {
     utm_campaign: pick(payload, "utm_campaign") ?? cookieAttribution?.utm_campaign,
     utm_content: pick(payload, "utm_content") ?? cookieAttribution?.utm_content,
     utm_term: pick(payload, "utm_term") ?? cookieAttribution?.utm_term,
-    gclid: cookieAttribution?.gclid,
-    fbclid: cookieAttribution?.fbclid,
-    landing_page: cookieAttribution?.landing_page,
-    referrer: cookieAttribution?.referrer,
+    gclid: pick(payload, "gclid") ?? cookieAttribution?.gclid,
+    fbclid: pick(payload, "fbclid") ?? cookieAttribution?.fbclid,
+    landing_page: pick(payload, "landing_page") ?? cookieAttribution?.landing_page,
+    referrer: pick(payload, "referrer") ?? cookieAttribution?.referrer,
   };
 
   let admin;
@@ -133,6 +164,7 @@ export async function POST(request: NextRequest) {
     typebot_result_id: lead.typebot_result_id,
     status: "submitted",
     submitted_at: new Date().toISOString(),
+    summary,
     raw_payload: payload,
   });
 
@@ -151,6 +183,10 @@ export async function POST(request: NextRequest) {
     city: lead.city,
     state: lead.state,
     source: lead.source,
+    principalChallenge: diagnosticAnswers.principalChallenge,
+    averageTicket: diagnosticAnswers.averageTicket,
+    orderChannel: diagnosticAnswers.orderChannel,
+    paidTraffic: diagnosticAnswers.paidTraffic,
   });
 
   return NextResponse.json({

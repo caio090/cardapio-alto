@@ -33,25 +33,25 @@ const FAQS = [
 
 export function Faq() {
   return (
-    <section className="border-t border-border bg-bg py-24 sm:py-32">
+    <section className="bg-cream py-20 sm:py-28">
       <div className="mx-auto max-w-3xl px-6 sm:px-8">
-        <h2 className="text-[clamp(2rem,4vw,3.25rem)] font-black leading-tight text-heading">
+        <h2 className="text-[clamp(1.85rem,3.4vw,2.75rem)] font-black leading-tight text-heading-dark">
           Perguntas frequentes.
         </h2>
 
-        <div className="mt-10 divide-y divide-border border-y border-border">
+        <div className="mt-10 divide-y divide-cream-border border-y border-cream-border">
           {FAQS.map((faq) => (
-            <details key={faq.question} className="group py-6">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-base font-bold text-ink sm:text-lg">
+            <details key={faq.question} className="group py-5">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-base font-bold text-heading-dark sm:text-lg">
                 {faq.question}
                 <span
                   aria-hidden
-                  className="shrink-0 text-xl font-normal text-muted transition-transform group-open:rotate-45"
+                  className="shrink-0 text-lg font-normal text-[#1a1206]/40 transition-transform group-open:rotate-45"
                 >
                   +
                 </span>
               </summary>
-              <p className="mt-3 max-w-xl text-base leading-relaxed text-muted">
+              <p className="mt-3 max-w-xl text-base leading-relaxed text-[#1a1206]/60">
                 {faq.answer}
               </p>
             </details>

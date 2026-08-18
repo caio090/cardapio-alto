@@ -1,67 +1,61 @@
 const AREAS = [
   {
-    course: "I",
+    number: "01",
     name: "Cardápio",
-    description:
-      "Como produtos, preços, categorias, imagens e destaques estão apresentados.",
+    description: "Produtos, preços, categorias e destaques.",
   },
   {
-    course: "II",
+    number: "02",
     name: "Conteúdo",
-    description:
-      "Como o negócio aparece e cria desejo no ambiente digital.",
+    description: "Como o negócio aparece e cria desejo.",
   },
   {
-    course: "III",
+    number: "03",
     name: "Aquisição",
-    description:
-      "Como novas pessoas descobrem o estabelecimento.",
+    description: "Como novas pessoas descobrem o negócio.",
   },
   {
-    course: "IV",
+    number: "04",
     name: "Conversão",
-    description:
-      "O que acontece entre descobrir o negócio e realmente fazer um pedido.",
+    description: "O que acontece até o pedido acontecer.",
   },
 ];
 
 export function AnalysisPillars() {
   return (
-    <section id="o-que-analisamos" className="border-t border-border bg-bg py-24 sm:py-32">
+    <section id="o-que-analisamos" className="bg-cream py-20 sm:py-28">
       <div className="mx-auto max-w-6xl px-6 sm:px-8">
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:gap-20">
-          <div className="lg:sticky lg:top-28 lg:self-start">
-            <h2 className="text-[clamp(2rem,4vw,3.25rem)] font-black leading-tight text-heading">
-              O que analisamos.
-            </h2>
-            <p className="mt-6 max-w-sm text-base leading-relaxed text-muted">
-              Quatro áreas de uma mesma estrutura — não uma lista de
-              serviços soltos de agência. Uma futura quinta área, dados e
-              recorrência, ainda está em preparação.
-            </p>
-          </div>
+        <h2 className="max-w-xl text-[clamp(1.85rem,3.4vw,2.75rem)] font-black leading-tight text-heading-dark">
+          O que analisamos.
+        </h2>
 
-          <ul className="divide-y divide-border border-y border-border">
-            {AREAS.map((area) => (
-              <li
-                key={area.course}
-                className="group grid grid-cols-[3rem_1fr] gap-x-6 gap-y-2 py-8 sm:grid-cols-[4rem_1fr]"
+        <div className="mt-16 grid gap-x-12 gap-y-14 sm:grid-cols-2">
+          {AREAS.map((area, i) => (
+            <div
+              key={area.number}
+              className={i % 2 === 1 ? "sm:mt-16 sm:text-right" : undefined}
+            >
+              <span className="font-display text-sm font-semibold text-bg-deep">
+                {area.number}
+              </span>
+              <h3 className="mt-2 text-3xl font-black text-heading-dark sm:text-4xl">
+                {area.name}
+              </h3>
+              <p
+                className={`mt-3 max-w-[22ch] text-base leading-relaxed text-[#1a1206]/60 ${
+                  i % 2 === 1 ? "sm:ml-auto" : ""
+                }`}
               >
-                <span className="font-display text-sm font-medium text-ink-accent">
-                  {area.course}
-                </span>
-                <div>
-                  <h3 className="text-xl font-bold text-heading sm:text-2xl">
-                    {area.name}
-                  </h3>
-                  <p className="mt-2 max-w-xl text-base leading-relaxed text-muted">
-                    {area.description}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
+                {area.description}
+              </p>
+            </div>
+          ))}
         </div>
+
+        <p className="mt-16 max-w-md text-sm text-[#1a1206]/50">
+          Uma futura quinta área, dados e recorrência, ainda está em
+          preparação.
+        </p>
       </div>
     </section>
   );

@@ -1,46 +1,40 @@
-import Image from "next/image";
-
 const STEPS = ["Instagram", "Link", "Cardápio", "Produto", "Combo / adicional", "Pedido"];
 
 export function BuyingPath() {
   return (
-    <section className="border-t border-border bg-surface py-24 sm:py-32">
-      <div className="mx-auto grid max-w-6xl gap-16 px-6 sm:px-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-20">
+    <section className="bg-navy py-20 sm:py-28">
+      <div className="mx-auto grid max-w-6xl gap-14 px-6 sm:px-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-20">
         <div>
-          <h2 className="text-[clamp(2rem,4vw,3.25rem)] font-black leading-tight text-heading">
+          <h2 className="text-[clamp(1.85rem,3.4vw,2.75rem)] font-black leading-tight text-heading">
             O pedido começa antes do cliente abrir o cardápio.
           </h2>
-          <p className="mt-5 max-w-lg text-base leading-relaxed text-muted sm:text-lg">
+          <p className="mt-5 max-w-lg text-base leading-relaxed text-navy-muted sm:text-lg">
             Cada etapa pode facilitar a compra, aumentar o valor do pedido ou
             fazer o cliente desistir. O Cardápio Alto analisa e organiza
             esse caminho como uma estrutura única.
           </p>
-
-          <ol className="mt-12 flex flex-wrap items-center gap-x-2 gap-y-4">
-            {STEPS.map((step, i) => (
-              <li key={step} className="flex items-center gap-2">
-                <span className="rounded-full border border-border bg-bg px-4 py-2 text-sm font-medium text-ink sm:text-base">
-                  {step}
-                </span>
-                {i < STEPS.length - 1 && (
-                  <span aria-hidden className="text-ink-accent">
-                    →
-                  </span>
-                )}
-              </li>
-            ))}
-          </ol>
         </div>
 
-        <div className="relative aspect-[4/5] overflow-hidden rounded-2xl">
-          <Image
-            src="/images/phone-caminho.jpg"
-            alt="Tela de celular com Instagram entre os aplicativos — o pedido começa no digital, antes do cardápio"
-            fill
-            sizes="(min-width: 1024px) 40vw, 90vw"
-            className="object-cover"
-          />
-        </div>
+        {/* The path itself, drawn — not a stock photo of a phone. */}
+        <ol className="relative flex flex-col gap-0">
+          {STEPS.map((step, i) => (
+            <li key={step} className="relative flex items-center gap-5 py-3.5">
+              {i < STEPS.length - 1 && (
+                <span
+                  aria-hidden
+                  className="absolute left-[11px] top-[calc(50%+14px)] h-[calc(100%-14px)] w-px bg-navy-border"
+                />
+              )}
+              <span
+                aria-hidden
+                className="relative z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-bg-deep text-xs font-bold text-white"
+              >
+                {i + 1}
+              </span>
+              <span className="text-lg font-semibold text-heading sm:text-xl">{step}</span>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   );

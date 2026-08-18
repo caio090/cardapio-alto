@@ -4,8 +4,7 @@ import { Audience } from "@/components/audience";
 import { Problem } from "@/components/problem";
 import { AnalysisPillars } from "@/components/analysis-pillars";
 import { BuyingPath } from "@/components/buying-path";
-import { AverageTicket } from "@/components/average-ticket";
-import { CaseStudy } from "@/components/case-study";
+import { Ticket } from "@/components/ticket";
 import { Method } from "@/components/method";
 import { Positioning } from "@/components/positioning";
 import { Diagnostic } from "@/components/diagnostic";
@@ -23,8 +22,7 @@ export default function Home() {
         <Problem />
         <AnalysisPillars />
         <BuyingPath />
-        <AverageTicket />
-        <CaseStudy />
+        <Ticket />
         <Method />
         <Positioning />
         <Diagnostic />

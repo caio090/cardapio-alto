@@ -3,9 +3,9 @@ import { cabinetGrotesk } from "@/fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Cárdapio Alto — Assessoria de Delivery",
+  title: "Cardápio Alto | Assessoria para Delivery e Aumento de Ticket Médio",
   description:
-    "Engenharia de cardápio, fotografia, tráfego pago, ativação de marca e remarketing para restaurantes que querem vender mais no delivery.",
+    "Assessoria para restaurantes e delivery focada em ticket médio, cardápio, caminho de compra, conteúdo e tráfego.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

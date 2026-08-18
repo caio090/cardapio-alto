@@ -1,38 +1,22 @@
-import Image from "next/image";
-import Link from "next/link";
-import { whatsappHref } from "@/lib/contact";
+import { DiagnosticCTA } from "./diagnostic-cta";
 
 export function CtaSection() {
   return (
-    <section id="contato" className="relative overflow-hidden border-t border-border py-28 sm:py-36">
-      <Image
-        src="/images/vitrine-noite.jpg"
-        alt="Vitrine de restaurante à noite, letreiro luminoso sobre o salão iluminado"
-        fill
-        sizes="100vw"
-        className="object-cover object-center"
-      />
-      <div aria-hidden className="absolute inset-0 bg-bg/85" />
-
+    <section className="relative overflow-hidden border-t border-border bg-bg-deep py-28 sm:py-36">
       <div className="relative mx-auto max-w-3xl px-6 text-center sm:px-8">
-        <h2 className="text-[clamp(2.25rem,5vw,4rem)] font-black leading-tight text-ink">
-          Vamos elevar o seu delivery?
+        <h2 className="text-[clamp(2rem,4.5vw,3.5rem)] font-black leading-tight text-heading">
+          Quanto o seu negócio pode estar deixando na mesa?
         </h2>
         <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-muted">
-          Conte pra gente como está o seu cardápio hoje e a gente devolve um
-          diagnóstico real, sem enrolação.
+          O primeiro passo é entender onde seu delivery pode vender melhor.
         </p>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-          <Link
-            href={whatsappHref("Olá! Quero fazer um diagnóstico com a Cárdapio Alto.")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-full bg-primary px-8 py-4 text-base font-medium text-on-fill transition-transform hover:scale-[1.03]"
-          >
-            Chamar no WhatsApp
-          </Link>
+          <DiagnosticCTA>Fazer meu diagnóstico</DiagnosticCTA>
         </div>
+        <p className="mt-4 text-sm text-muted">
+          Comece respondendo algumas perguntas sobre o seu negócio.
+        </p>
       </div>
     </section>
   );

@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+:root {
+  /* Surface ramp — pure near-black, no hue tint on bg itself. */
+  --bg: oklch(0.1 0 0);
+  --surface: oklch(0.16 0.006 188);
+  --surface-2: oklch(0.21 0.008 188);
+  --border: oklch(0.28 0.01 188);
+
+  /* Text ramp */
+  --ink: oklch(0.97 0.004 188);
+  --muted: oklch(0.66 0.014 188);
+
+  /* Brand — verdigris (precision) + brass (warmth), both mid-luminance
+     saturated, so text sitting on either fill is always near-white. */
+  --primary: oklch(0.74 0.11 188);
+  --primary-strong: oklch(0.68 0.13 188);
+  --accent: oklch(0.62 0.13 55);
+  --accent-strong: oklch(0.56 0.14 55);
+  --on-fill: oklch(0.99 0.003 188);
+
+  --font-display: "Cabinet Grotesk", ui-sans-serif, system-ui, sans-serif;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-primary: var(--primary);
+  --color-primary-strong: var(--primary-strong);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-on-fill: var(--on-fill);
+  --font-sans: var(--font-display);
+  --font-display: var(--font-display);
+}
+
+/* Dark-native by design: the mood is a dining room after hours, not an
+   inversion of a light theme, so the palette holds steady regardless of
+   OS scheme. */
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  background: var(--bg);
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-display);
+  text-wrap: pretty;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+  letter-spacing: -0.02em;
+}
+
+::selection {
+  background: var(--primary);
+  color: var(--on-fill);
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-rise {
+  animation: rise-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}

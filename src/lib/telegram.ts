@@ -60,26 +60,43 @@ function buildMessage(input: DiagnosticNotificationInput): string {
   const location = [input.city, input.state].filter(Boolean).join(" - ");
   const waLink = whatsappLink(input.phone);
   const igHandle = instagramHandle(input.instagram);
+  const name = input.name?.trim();
+  const orderChannel = input.orderChannel?.trim();
+  const paidTraffic = input.paidTraffic?.trim();
+
+  // Negócio/WhatsApp/Segmento/Principal desafio/Ticket médio/Origem/Status
+  // are always shown (fallback to "Não informado" if somehow empty).
+  // Contato/Cidade/Instagram/Canal de pedidos/Tráfego pago only appear once
+  // the Typebot flow actually starts collecting them — showing "Não
+  // informado" for fields nothing ever sends just adds noise.
+  const contactLines: string[] = [];
+  if (name) contactLines.push(`👤 <b>Contato:</b> ${escapeHtml(name)}`);
+  contactLines.push(`🏪 <b>Negócio:</b> ${field(input.businessName)}`);
+  if (location) contactLines.push(`📍 <b>Cidade:</b> ${escapeHtml(location)}`);
+  contactLines.push(
+    waLink
+      ? `📱 <b>WhatsApp:</b> ${field(input.phone)} — <a href="${waLink}">ABRIR WHATSAPP</a>`
+      : `📱 <b>WhatsApp:</b> ${field(input.phone)}`
+  );
+  if (igHandle) contactLines.push(`📷 <b>Instagram:</b> ${escapeHtml(igHandle)}`);
+
+  const diagnosticLines: string[] = [
+    `Segmento: ${field(input.businessType)}`,
+    `Principal desafio: ${field(input.principalChallenge)}`,
+    `Ticket médio: ${field(input.averageTicket)}`,
+  ];
+  if (orderChannel) diagnosticLines.push(`Canal de pedidos: ${escapeHtml(orderChannel)}`);
+  if (paidTraffic) diagnosticLines.push(`Tráfego pago: ${escapeHtml(paidTraffic)}`);
 
   const lines = [
     "🍽️ <b>NOVO DIAGNÓSTICO</b>",
     "CARDÁPIO ALTO",
     "",
-    `👤 <b>Contato:</b> ${field(input.name)}`,
-    `🏪 <b>Negócio:</b> ${field(input.businessName)}`,
-    `📍 <b>Cidade:</b> ${location ? escapeHtml(location) : FALLBACK}`,
-    waLink
-      ? `📱 <b>WhatsApp:</b> ${field(input.phone)} — <a href="${waLink}">ABRIR WHATSAPP</a>`
-      : `📱 <b>WhatsApp:</b> ${field(input.phone)}`,
-    `📷 <b>Instagram:</b> ${igHandle ? escapeHtml(igHandle) : FALLBACK}`,
+    ...contactLines,
     "",
     "<b>DIAGNÓSTICO</b>",
     "",
-    `Segmento: ${field(input.businessType)}`,
-    `Principal desafio: ${field(input.principalChallenge)}`,
-    `Ticket médio: ${field(input.averageTicket)}`,
-    `Canal de pedidos: ${field(input.orderChannel)}`,
-    `Tráfego pago: ${field(input.paidTraffic)}`,
+    ...diagnosticLines,
     "",
     `Origem: ${field(input.source)}`,
     "Status: NOVO LEAD",

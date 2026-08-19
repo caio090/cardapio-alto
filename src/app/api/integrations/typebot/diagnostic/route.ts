@@ -55,6 +55,7 @@ const TYPEBOT_ALIASES: Partial<Record<keyof DiagnosticPayload, string>> = {
   businessName: "empresa_nome",
   businessType: "segmento",
   principalChallenge: "principal_desafio",
+  averageTicket: "ticket_medio",
   phone: "whatsapp",
   source: "origem",
 };

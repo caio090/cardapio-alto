@@ -48,15 +48,33 @@ function normalizeString(value: unknown): string | undefined {
   return trimmed.slice(0, MAX_FIELD_LENGTH);
 }
 
+// The Typebot flow in production sends its own variable names (Portuguese,
+// snake_case) instead of our internal contract — mapped here so the flow
+// itself never needs to be rebuilt to match our naming.
+const TYPEBOT_ALIASES: Partial<Record<keyof DiagnosticPayload, string>> = {
+  businessName: "empresa_nome",
+  businessType: "segmento",
+  principalChallenge: "principal_desafio",
+  phone: "whatsapp",
+  source: "origem",
+};
+
 // Typebot's HTTP Request block can send fields at the top level or nested
 // under a "variables" object depending on how the request body is built in
 // the flow — accept either shape so we don't depend on one exact layout.
-// This is the normalized contract: whatever the real Typebot variable names
-// turn out to be, that mapping happens on the Typebot side (HTTP Request
-// block body), not here — the backend never depends on Typebot's internal
-// naming.
+// Checked in order: internal name at top level, internal name in
+// `variables`, Typebot alias at top level, Typebot alias in `variables` —
+// the old normalized-name contract still wins if a caller sends both.
 function pick(payload: DiagnosticPayload, key: keyof DiagnosticPayload): string | undefined {
-  return normalizeString(payload[key]) ?? normalizeString(payload.variables?.[key as string]);
+  const raw = payload as Record<string, unknown>;
+  const alias = TYPEBOT_ALIASES[key];
+
+  return (
+    normalizeString(payload[key]) ??
+    normalizeString(payload.variables?.[key as string]) ??
+    (alias ? normalizeString(raw[alias]) : undefined) ??
+    (alias ? normalizeString(payload.variables?.[alias]) : undefined)
+  );
 }
 
 export async function POST(request: NextRequest) {

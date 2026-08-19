@@ -20,3 +20,13 @@ export const DIAGNOSTIC_IS_EXTERNAL = true;
 // fluxo de diagnóstico (que continua exclusivamente pelo Typebot).
 export const WHATSAPP_URL =
   "https://wa.me/5589994584163?text=Ol%C3%A1%21%20Conheci%20o%20Card%C3%A1pio%20Alto%20e%20quero%20saber%20mais%20sobre%20a%20an%C3%A1lise%20de%20delivery";
+
+// Same number as WHATSAPP_URL above, kept separate so product CTAs can send
+// a message tailored to the pack instead of the fixed generic text. Central
+// place to update the number — used by ProductCheckoutCta as the fallback
+// while a product's checkoutUrl is still empty (see src/lib/products.ts).
+const WHATSAPP_PHONE = "5589994584163";
+
+export function buildWhatsappUrl(message: string): string {
+  return `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
+}

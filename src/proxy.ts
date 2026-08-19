@@ -5,10 +5,13 @@ import {
   ATTRIBUTION_MAX_AGE_SECONDS,
   extractAttributionFromSearchParams,
 } from "@/lib/attribution";
+import { ADMIN_SESSION_COOKIE, isValidAdminSessionToken } from "@/lib/admin/session";
 
 // Next.js 16 renamed `middleware.ts` to `proxy.ts` — this refreshes the
 // Supabase session on every request, captures first-touch UTM/gclid/fbclid
-// attribution into a first-party cookie, and gates /app/* behind a login.
+// attribution into a first-party cookie, gates /app/* behind Supabase auth,
+// and gates /admin/* behind the separate admin session cookie (see
+// src/lib/admin/session.ts — unrelated to Supabase auth, its own password).
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
@@ -40,6 +43,7 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isAppRoute = pathname.startsWith("/app");
   const isLoginRoute = pathname === "/entrar";
+  const isAdminProtectedRoute = pathname.startsWith("/admin/");
 
   let finalResponse = response;
 
@@ -53,6 +57,16 @@ export async function proxy(request: NextRequest) {
     url.pathname = "/app";
     url.searchParams.delete("next");
     finalResponse = NextResponse.redirect(url);
+  } else if (isAdminProtectedRoute) {
+    const hasValidSession = await isValidAdminSessionToken(
+      request.cookies.get(ADMIN_SESSION_COOKIE)?.value
+    );
+    if (!hasValidSession) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/admin";
+      url.search = "";
+      finalResponse = NextResponse.redirect(url);
+    }
   }
 
   // First-touch attribution, applied last so it survives whichever response

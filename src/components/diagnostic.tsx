@@ -13,7 +13,7 @@ export function Diagnostic() {
         </p>
 
         <div className="mt-8">
-          <DiagnosticCTA>Começar diagnóstico</DiagnosticCTA>
+          <DiagnosticCTA location="diagnostic_section">Começar diagnóstico</DiagnosticCTA>
         </div>
       </div>
     </section>

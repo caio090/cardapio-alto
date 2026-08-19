@@ -12,7 +12,7 @@ export function CtaSection() {
         </p>
 
         <div className="mt-8">
-          <DiagnosticCTA>Fazer meu diagnóstico</DiagnosticCTA>
+          <DiagnosticCTA location="cta_section">Fazer meu diagnóstico</DiagnosticCTA>
         </div>
       </div>
     </section>

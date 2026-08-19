@@ -20,6 +20,9 @@ export const CA_EVENTS = {
   DIAGNOSTIC_COMPLETED: "ca_diagnostic_completed",
   LEAD_GENERATED: "ca_lead_generated",
   WHATSAPP_CLICK: "ca_whatsapp_click",
+  PRODUCT_VIEW: "ca_product_view",
+  PRODUCT_CTA_CLICK: "ca_product_cta_click",
+  PRODUCT_PURCHASE_CLICK: "ca_product_purchase_click",
 } as const;
 
 export type CAEventName = (typeof CA_EVENTS)[keyof typeof CA_EVENTS];

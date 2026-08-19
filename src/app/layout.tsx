@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { cabinetGrotesk } from "@/fonts";
+import { TrackingProvider } from "@/components/tracking-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,7 +16,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       data-scroll-behavior="smooth"
       className={`${cabinetGrotesk.variable} h-full`}
     >
-      <body className="min-h-full bg-bg text-ink antialiased">{children}</body>
+      <body className="min-h-full bg-bg text-ink antialiased">
+        <TrackingProvider />
+        {children}
+      </body>
     </html>
   );
 }

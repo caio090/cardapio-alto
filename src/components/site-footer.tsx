@@ -29,9 +29,7 @@ export function SiteFooter() {
             >
               WhatsApp
             </a>
-            <Link href="/entrar" className="font-medium text-ink transition-colors hover:text-ink-accent">
-              Entrar
-            </Link>
+            {/* "Entrar" removido temporariamente — /entrar ainda não existe. */}
             <Link
               href="/politica-de-privacidade"
               className="font-medium text-ink transition-colors hover:text-ink-accent"
@@ -41,7 +39,12 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <p className="text-sm text-muted">© {new Date().getFullYear()} Cardápio Alto</p>
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted">© {new Date().getFullYear()} Cardápio Alto</p>
+          <Link href="/admin" className="text-xs text-muted/60 transition-colors hover:text-muted">
+            Acesso
+          </Link>
+        </div>
       </div>
     </footer>
   );

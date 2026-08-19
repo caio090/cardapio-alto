@@ -6,10 +6,11 @@ import { FullLogo } from "./logo";
 import { DiagnosticCTA } from "./diagnostic-cta";
 
 const NAV = [
-  { href: "#metodo", label: "Como funciona" },
-  { href: "#o-que-analisamos", label: "O que analisamos" },
-  { href: "#para-quem-e", label: "Para quem é" },
-  { href: "#sobre", label: "Sobre" },
+  { href: "/#metodo", label: "Como funciona" },
+  { href: "/#o-que-analisamos", label: "O que analisamos" },
+  { href: "/#para-quem-e", label: "Para quem é" },
+  { href: "/#sobre", label: "Sobre" },
+  { href: "/produtos", label: "Produtos" },
 ];
 
 export function SiteHeader() {
@@ -34,11 +35,11 @@ export function SiteHeader() {
       }`}
     >
       <div className="mx-auto flex max-w-[1600px] items-center justify-between px-6 py-3.5 sm:px-8 lg:px-16">
-        <Link href="#top" onClick={() => setOpen(false)}>
+        <Link href="/" onClick={() => setOpen(false)}>
           <FullLogo height={44} />
         </Link>
 
-        <nav className="hidden items-center gap-7 md:flex">
+        <nav className="hidden items-center gap-7 lg:flex">
           {NAV.map((item) => (
             <Link
               key={item.href}
@@ -50,11 +51,13 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-4 md:flex">
-          <Link href="/entrar" className="text-sm font-medium text-[#1a1206] transition-colors hover:text-bg-deep">
-            Entrar
-          </Link>
-          <DiagnosticCTA className="rounded-full bg-black px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-bg-deep">
+        <div className="hidden items-center lg:flex">
+          {/* "Entrar" removido temporariamente — /entrar ainda não existe.
+              Reintroduzir aqui quando a área do cliente estiver pronta. */}
+          <DiagnosticCTA
+            location="header"
+            className="rounded-full bg-black px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-bg-deep"
+          >
             Fazer diagnóstico
           </DiagnosticCTA>
         </div>
@@ -65,7 +68,7 @@ export function SiteHeader() {
           aria-expanded={open}
           aria-controls="mobile-menu"
           aria-label={open ? "Fechar menu" : "Abrir menu"}
-          className="flex h-10 w-10 items-center justify-center rounded-lg border border-black/10 text-[#1a1206] md:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-lg border border-black/10 text-[#1a1206] lg:hidden"
         >
           <span className="sr-only">{open ? "Fechar menu" : "Abrir menu"}</span>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -79,7 +82,7 @@ export function SiteHeader() {
       </div>
 
       {open && (
-        <div id="mobile-menu" className="border-t border-black/10 bg-[#FDFAF5] px-6 py-6 md:hidden">
+        <div id="mobile-menu" className="border-t border-black/10 bg-[#FDFAF5] px-6 py-6 lg:hidden">
           <nav className="flex flex-col gap-5">
             {NAV.map((item) => (
               <Link
@@ -91,10 +94,9 @@ export function SiteHeader() {
                 {item.label}
               </Link>
             ))}
-            <Link href="/entrar" onClick={() => setOpen(false)} className="text-base font-medium text-[#1a1206]">
-              Entrar
-            </Link>
+            {/* "Entrar" removido temporariamente — /entrar ainda não existe. */}
             <DiagnosticCTA
+              location="header_mobile"
               className="mt-2 rounded-full bg-black px-5 py-3 text-center text-sm font-medium text-white"
               onClick={() => setOpen(false)}
             >

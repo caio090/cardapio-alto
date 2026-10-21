@@ -1,0 +1,44 @@
+{
+  "name": "cardapio-alto-video",
+  "version": "1.0.0",
+  "description": "Comercial vertical Card\u00e1pio Alto (Remotion)",
+  "repository": {},
+  "license": "UNLICENSED",
+  "engines": {
+    "node": "^20.19.0 || ^22.13.0 || >=24"
+  },
+  "private": true,
+  "dependencies": {
+    "@remotion/captions": "4.0.537",
+    "@remotion/cli": "4.0.537",
+    "@remotion/fonts": "4.0.537",
+    "@remotion/media": "4.0.537",
+    "@remotion/transitions": "4.0.537",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.537"
+  },
+  "devDependencies": {
+    "@remotion/eslint-config-flat": "4.0.537",
+    "@types/react": "19.2.7",
+    "@types/web": "0.0.166",
+    "eslint": "10.12.0",
+    "prettier": "3.8.1",
+    "typescript": "5.9.3"
+  },
+  "scripts": {
+    "dev": "remotion studio",
+    "build": "remotion bundle",
+    "upgrade": "remotion upgrade",
+    "lint": "eslint src && tsc",
+    "narration:align": "node scripts/align-narration.mjs",
+    "audio:build": "python3 scripts/build-audio.py",
+    "render:draft": "remotion render ComercialCardapioAlto out/draft-540x960.mp4 --scale=0.5 --codec=h264 --audio-codec=aac",
+    "render": "remotion render ComercialCardapioAlto out/render-bruto.mp4 --codec=h264 --audio-codec=aac --crf=16 && npm run master",
+    "render:cover": "remotion still Capa out/capa.png",
+    "master": "ffmpeg -y -loglevel error -i out/render-bruto.mp4 -vf scale=out_range=tv,format=yuv420p -c:v libx264 -preset slow -crf 18 -profile:v high -r 30 -af loudnorm=I=-14:TP=-1.5:LRA=11 -c:a aac -b:a 192k -ar 48000 -movflags +faststart out/cardapio-alto-comercial.mp4"
+  },
+  "allowScripts": {
+    "esbuild": false
+  }
+}

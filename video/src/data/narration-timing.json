@@ -1,0 +1,24 @@
+{
+  "source": "estimativa",
+  "note": "Tempos estimados para locução natural em pt-BR (~2,6 palavras/s). Substituídos por 'npm run narration:align' quando houver public/audio/narracao/narracao.wav.",
+  "audioFile": null,
+  "audioDurationMs": null,
+  "cues": [
+    { "id": "c01", "startMs": 400, "endMs": 2500 },
+    { "id": "c02", "startMs": 4000, "endMs": 8400 },
+    { "id": "c03", "startMs": 10000, "endMs": 10800 },
+    { "id": "c04", "startMs": 11300, "endMs": 11900 },
+    { "id": "c05", "startMs": 12400, "endMs": 13700 },
+    { "id": "c06", "startMs": 14000, "endMs": 14800 },
+    { "id": "c07", "startMs": 15300, "endMs": 17500 },
+    { "id": "c08", "startMs": 17800, "endMs": 20200 },
+    { "id": "c09", "startMs": 20700, "endMs": 23600 },
+    { "id": "c10", "startMs": 23800, "endMs": 25700 },
+    { "id": "c11", "startMs": 25900, "endMs": 27000 },
+    { "id": "c12", "startMs": 27200, "endMs": 29000 },
+    { "id": "c13", "startMs": 29300, "endMs": 31300 },
+    { "id": "c14", "startMs": 31800, "endMs": 34100 },
+    { "id": "c15", "startMs": 34900, "endMs": 36300 },
+    { "id": "c16", "startMs": 37100, "endMs": 38600 }
+  ]
+}

@@ -36,7 +36,8 @@
     "render:draft": "remotion render ComercialCardapioAlto out/draft-540x960.mp4 --scale=0.5 --codec=h264 --audio-codec=aac",
     "render": "remotion render ComercialCardapioAlto out/render-bruto.mp4 --codec=h264 --audio-codec=aac --crf=16 && npm run master",
     "render:cover": "remotion still Capa out/capa.png",
-    "master": "ffmpeg -y -loglevel error -i out/render-bruto.mp4 -vf scale=out_range=tv,format=yuv420p -c:v libx264 -preset slow -crf 18 -profile:v high -r 30 -af loudnorm=I=-14:TP=-1.5:LRA=11 -c:a aac -b:a 192k -ar 48000 -movflags +faststart out/cardapio-alto-comercial.mp4"
+    "master": "ffmpeg -y -loglevel error -i out/render-bruto.mp4 -vf scale=out_range=tv,format=yuv420p -c:v libx264 -preset slow -crf 18 -profile:v high -r 30 -af loudnorm=I=-14:TP=-1.5:LRA=11 -c:a aac -b:a 192k -ar 48000 -movflags +faststart out/cardapio-alto-comercial.mp4",
+    "narration:generate": "python3 scripts/generate-narration.py"
   },
   "allowScripts": {
     "esbuild": false

@@ -4,15 +4,16 @@ Comercial de ~40 s, 1080×1920, 30 fps, H.264 + AAC, para Instagram Reels.
 Projeto Remotion independente do site Next.js (pasta excluída do
 `tsconfig`/ESLint da raiz).
 
-> **Status: PRÉVIA — não finalizado.** Falta a narração (ver Pendências).
-> O MP4 em `entregas/` tem trilha, efeitos, legendas e todas as cenas, mas
-> não tem voz.
+> **Status:** versão com narração sintética em `entregas/cardapio-alto-comercial.mp4`
+> (44,1 s, -14,3 LUFS). A voz é TTS (Kokoro, voz `pm_alex`); revise a
+> pronúncia antes de veicular (ver Pendências).
 
 ## Comandos
 
 ```bash
 npm install
 npm run dev               # Remotion Studio (preview interativo)
+npm run narration:generate -- --model-dir <pasta-do-modelo>  # TTS Kokoro
 npm run narration:align   # sincroniza com public/audio/narracao/narracao.wav
 npm run audio:build       # gera trilha + efeitos (python3, numpy, scipy)
 npm run render:draft      # teste 540×960
@@ -29,10 +30,9 @@ Em ambientes sem download do Chrome Headless Shell, exporte
 `src/data/narration-timing.json` tem o início/fim de cada frase.
 `src/data/timeline.ts` deriva tudo disso: fronteiras de cena, os 4 cortes
 da cena 03, legendas palavra a palavra, ducking da música e posição dos
-efeitos (`sound-cues.ts`). Hoje o JSON contém uma **estimativa** de ritmo
-natural (`"source": "estimativa"`). Ao rodar `narration:align` com a
-locução real, os tempos medidos substituem a estimativa e a duração final
-passa a ser a da voz.
+efeitos (`sound-cues.ts`). Os tempos atuais foram medidos na locução real
+(`"source": "silencedetect"`), e a duração do vídeo é a da voz + 1,9 s de
+assinatura. Nada foi acelerado.
 
 ## Estrutura
 
@@ -63,7 +63,10 @@ public/
 
 ## Trilhas de áudio
 
-1. **Narração**: `audio/narracao/narracao.wav` (pendente).
+1. **Narração**: `audio/narracao/narracao.wav`. Gerada por
+   `scripts/generate-narration.py`, com tratamento de voz (passa-alta,
+   presença, compressão, -16 LUFS). A trilha fica ~16 dB abaixo da voz
+   durante a fala.
 2. **Trilha musical**: `audio/musica/trilha.wav`. Tensão nas cenas 02–03,
    pulso eletrônico na 04, progressão maior na 05, recuo na 06, assinatura
    curta na 07. Ducking automático durante cada frase.
@@ -83,6 +86,7 @@ public/
 | Pizza | `broll/fotos/pizza-close.jpg` (1600×2400) | Site oficial | Idem. |
 | Preparo | `broll/fotos/ingredientes.jpg` (1600×1600) | Site oficial | Idem; usada a 22% de opacidade na cena 05. |
 | Telas de cardápio | código (`MenuComparison.tsx`) | Criadas para a peça | Ilustrativas, com selo "Simulação ilustrativa". As descrições dos produtos descrevem só o que aparece nas fotos. Preços são de exemplo. Não há métricas nem resultados. |
+| Narração | `public/audio/narracao/narracao.wav` | Kokoro TTS v1.0 (Apache 2.0), voz masculina pt-BR `pm_alex`, velocidade 1.0 | Modelo baixado de github.com/thewh1teagle/kokoro-onnx (releases `model-files-v1.0`); não versionado. |
 | Música e efeitos | `public/audio/musica`, `public/audio/sfx` | Sintetizados por `scripts/build-audio.py` | Originais, sem samples nem licenças de terceiros. |
 
 Resolução do B-roll: todas as fotos têm ≥ 1600 px no lado menor usado.
@@ -91,12 +95,12 @@ origem), sem upscale visível.
 
 ## Pendências
 
-1. **Narração (bloqueio).** O ambiente de produção não tinha nenhum TTS
-   autorizado: sem chave de API configurada (ElevenLabs, Gemini, OpenAI) e
-   com o download de vozes neurais locais (Piper/Hugging Face) bloqueado
-   pela política de rede. Pode ser gravação humana ou TTS licenciado.
-   Instruções em `public/audio/narracao/README.md`. A peça não deve ser
-   publicada sem ela.
+1. **Revisar a narração.** É uma voz sintética aberta: soa natural na
+   maior parte, mas ouça antes de veicular, sobretudo a pronúncia de
+   "Cardápio Alto" e o ritmo da enumeração da cena 05. Para uma voz
+   premium, grave um locutor ou use um TTS comercial (ElevenLabs/Gemini) e
+   substitua `narracao.wav`. Depois rode `narration:align`, `audio:build` e
+   `render`, que o restante se ajusta sozinho.
 2. **Legendas palavra a palavra.** Com a locução real, a borda de cada
    frase fica presa ao áudio, e as palavras dentro dela são distribuídas
    pelo tamanho. Para precisão por palavra, transcreva com Whisper
@@ -106,6 +110,3 @@ origem), sem upscale visível.
    licença para uso em mídia paga, ou trocar por fotos de clientes
    autorizados.
 4. **B-roll em vídeo.** Nenhum clipe disponível (ver `public/broll/video`).
-5. **Revisão de mixagem com voz.** Depois do `narration:align`, rodar
-   `audio:build` e `render` e ouvir de novo: o ducking já existe, mas o
-   equilíbrio final depende do timbre da voz.

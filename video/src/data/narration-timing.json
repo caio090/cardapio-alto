@@ -1,24 +1,88 @@
 {
-  "source": "estimativa",
-  "note": "Tempos estimados para locução natural em pt-BR (~2,6 palavras/s). Substituídos por 'npm run narration:align' quando houver public/audio/narracao/narracao.wav.",
-  "audioFile": null,
-  "audioDurationMs": null,
+  "source": "silencedetect",
+  "note": "Tempos medidos em public/audio/narracao/narracao.wav (noise -35 dB, pausa mínima 0.25s).",
+  "audioFile": "audio/narracao/narracao.wav",
+  "audioDurationMs": 42130,
   "cues": [
-    { "id": "c01", "startMs": 400, "endMs": 2500 },
-    { "id": "c02", "startMs": 4000, "endMs": 8400 },
-    { "id": "c03", "startMs": 10000, "endMs": 10800 },
-    { "id": "c04", "startMs": 11300, "endMs": 11900 },
-    { "id": "c05", "startMs": 12400, "endMs": 13700 },
-    { "id": "c06", "startMs": 14000, "endMs": 14800 },
-    { "id": "c07", "startMs": 15300, "endMs": 17500 },
-    { "id": "c08", "startMs": 17800, "endMs": 20200 },
-    { "id": "c09", "startMs": 20700, "endMs": 23600 },
-    { "id": "c10", "startMs": 23800, "endMs": 25700 },
-    { "id": "c11", "startMs": 25900, "endMs": 27000 },
-    { "id": "c12", "startMs": 27200, "endMs": 29000 },
-    { "id": "c13", "startMs": 29300, "endMs": 31300 },
-    { "id": "c14", "startMs": 31800, "endMs": 34100 },
-    { "id": "c15", "startMs": 34900, "endMs": 36300 },
-    { "id": "c16", "startMs": 37100, "endMs": 38600 }
+    {
+      "id": "c01",
+      "startMs": 429,
+      "endMs": 2532
+    },
+    {
+      "id": "c02",
+      "startMs": 3691,
+      "endMs": 7377
+    },
+    {
+      "id": "c03",
+      "startMs": 8415,
+      "endMs": 9400
+    },
+    {
+      "id": "c04",
+      "startMs": 9902,
+      "endMs": 10612
+    },
+    {
+      "id": "c05",
+      "startMs": 11121,
+      "endMs": 12631
+    },
+    {
+      "id": "c06",
+      "startMs": 13086,
+      "endMs": 14044
+    },
+    {
+      "id": "c07",
+      "startMs": 14851,
+      "endMs": 17272
+    },
+    {
+      "id": "c08",
+      "startMs": 17704,
+      "endMs": 20886
+    },
+    {
+      "id": "c09",
+      "startMs": 21529,
+      "endMs": 24770
+    },
+    {
+      "id": "c10",
+      "startMs": 25175,
+      "endMs": 27392
+    },
+    {
+      "id": "c11",
+      "startMs": 27731,
+      "endMs": 28963
+    },
+    {
+      "id": "c12",
+      "startMs": 29311,
+      "endMs": 31215
+    },
+    {
+      "id": "c13",
+      "startMs": 31599,
+      "endMs": 33800
+    },
+    {
+      "id": "c14",
+      "startMs": 34388,
+      "endMs": 37234
+    },
+    {
+      "id": "c15",
+      "startMs": 38067,
+      "endMs": 39527
+    },
+    {
+      "id": "c16",
+      "startMs": 40482,
+      "endMs": 42130
+    }
   ]
 }

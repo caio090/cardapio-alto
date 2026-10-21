@@ -1,6 +1,8 @@
-# Narração — PENDENTE
+# Narração
 
-Coloque aqui o arquivo **`narracao.wav`** (WAV, 48 kHz, mono ou estéreo, sem
+`narracao.wav` atual: Kokoro TTS, voz `pm_alex` (gerada por
+`npm run narration:generate`). Para trocar por um locutor, substitua o
+arquivo **`narracao.wav`** (WAV, 48 kHz, mono ou estéreo, sem
 música nem efeitos, pico ≤ -3 dBFS, início em ~0,4 s).
 
 ## Direção

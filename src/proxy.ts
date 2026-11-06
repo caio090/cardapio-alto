@@ -15,10 +15,14 @@ import { ADMIN_SESSION_COOKIE, isValidAdminSessionToken } from "@/lib/admin/sess
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-    {
+  // Sem Supabase configurado (ex.: Central de Produtos rodando só em
+  // localhost, sem banco), o site segue funcionando: apenas não há usuário
+  // logado do Supabase. Com as variáveis presentes, o comportamento é o de sempre.
+  let user: { id: string } | null = null;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  if (supabaseUrl && supabaseKey) {
+    const supabase = createServerClient(supabaseUrl, supabaseKey, {
       cookies: {
         getAll() {
           return request.cookies.getAll();
@@ -33,12 +37,11 @@ export async function proxy(request: NextRequest) {
           }
         },
       },
-    }
-  );
+    });
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  }
 
   const { pathname } = request.nextUrl;
   const isAppRoute = pathname.startsWith("/app");

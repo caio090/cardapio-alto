@@ -229,10 +229,14 @@ export function buildManifest(product: ProductDoc, files: FileDoc[]): ManifestRo
 
   return items.map((item) => {
     const key = normalize(item);
-    const file = finals.find((f) => {
+    const matches = finals.filter((f) => {
       const tag = normalize(`${f.name} ${f.notes}`);
       return tag.includes(key) || key.split(" ").filter((w) => w.length > 3).every((w) => tag.includes(w));
     });
+    // Vários arquivos podem atender ao item (versões): vale o aprovado mais recente;
+    // sem aprovado, o mais recente.
+    const byNewest = (a: FileDoc, b: FileDoc) => b.createdAt.localeCompare(a.createdAt);
+    const file = matches.filter((f) => f.approval === "aprovado").sort(byNewest)[0] ?? matches.sort(byNewest)[0];
     const problems: string[] = [];
     if (!file) problems.push("Arquivo ausente");
     else {
@@ -291,4 +295,54 @@ export function evidenceSummary(evidences: EvidenceDoc[]) {
     reais: evidences.filter((e) => !e.ficticio).length,
     compras: evidences.filter((e) => e.kind === "compra" && !e.ficticio).length,
   };
+}
+
+/* ------------------------------------------------------------------ */
+/* Agenda (.ics)                                                       */
+/* ------------------------------------------------------------------ */
+
+function icsEscape(t: string) {
+  return t.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+}
+
+/** Dobra linhas longas (RFC 5545: máx. 75 octetos por linha). */
+function fold(line: string) {
+  const out: string[] = [];
+  let cur = "";
+  for (const ch of line) {
+    if (new TextEncoder().encode(cur + ch).length > 73) {
+      out.push(cur);
+      cur = " " + ch;
+    } else cur += ch;
+  }
+  out.push(cur);
+  return out.join("\r\n");
+}
+
+// Arquivo de calendário com as tarefas que têm data — eventos de dia
+// inteiro. Importável no Google Agenda sem nenhuma conexão ou custo.
+export function buildIcs(productName: string, tasks: TaskDoc[], stamp = new Date()): string {
+  const dt = stamp.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Central de Produtos//PT-BR", "CALSCALE:GREGORIAN", `X-WR-CALNAME:${icsEscape(productName)}`];
+  for (const t of tasks) {
+    if (!t.prazo || !/^\d{4}-\d{2}-\d{2}$/.test(t.prazo)) continue;
+    const start = t.prazo.replace(/-/g, "");
+    const next = new Date(`${t.prazo}T00:00:00Z`);
+    next.setUTCDate(next.getUTCDate() + 1);
+    const end = next.toISOString().slice(0, 10).replace(/-/g, "");
+    const stage = STAGES.find((s) => s.key === t.stageKey)?.label ?? t.stageKey;
+    lines.push(
+      "BEGIN:VEVENT",
+      `UID:${t.id}@central-de-produtos`,
+      `DTSTAMP:${dt}`,
+      `DTSTART;VALUE=DATE:${start}`,
+      `DTEND;VALUE=DATE:${end}`,
+      fold(`SUMMARY:${icsEscape(`${t.status === "feito" ? "(feito) " : ""}[${productName}] ${t.title}`)}`),
+      fold(`DESCRIPTION:${icsEscape(`Etapa: ${stage}. Situação: ${t.status}.${t.responsavel ? ` Responsável: ${t.responsavel}.` : ""}`)}`),
+      "STATUS:CONFIRMED",
+      "END:VEVENT"
+    );
+  }
+  lines.push("END:VCALENDAR");
+  return lines.join("\r\n") + "\r\n";
 }

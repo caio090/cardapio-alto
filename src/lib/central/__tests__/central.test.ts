@@ -91,7 +91,7 @@ describe("armazenamento local", () => {
     const { product } = buildCriadorPng();
     await store.put("products", product);
     const again = createLocalStore(dir, "desenvolvimento"); // simula reinício
-    expect((await again.get("products", product.id))?.name).toBe("Criador PNG");
+    expect((await again.get<typeof product>("products", product.id))?.name).toBe("Criador PNG");
     await again.putFile(`${product.id}/a/b.txt`, new TextEncoder().encode("oi"), "text/plain");
     expect(new TextDecoder().decode((await again.getFile(`${product.id}/a/b.txt`))!)).toBe("oi");
     await expect(again.getFile("../../etc/passwd")).rejects.toThrow();
@@ -128,10 +128,30 @@ describe("PDFs", () => {
     const corpoText = execFileSync("pdftotext", [path.join(dir, "corpo.pdf"), "-"]).toString();
     expect(corpoText.toLowerCase()).toContain("documento interno");
     expect(corpoText).toContain("Nenhuma evidência registrada");
+    expect(corpoText).toMatch(/1 ?\/ ?\d/); // rodapé com número de página
+    expect(corpoText).not.toContain("\u2192");
     const entText = execFileSync("pdftotext", [path.join(dir, "entregavel.pdf"), "-"]).toString();
+    expect(entText).toMatch(/0\.2 — edição de teste/);
     expect(entText).toContain("PROMPT-BASE");
     expect(entText.toLowerCase()).not.toContain("documento interno");
     process.env.CENTRAL_TEST_PDF_DIR = dir;
     console.log("PDFs de teste em", dir);
   }, 60_000);
+});
+
+import { buildIcs } from "../logic";
+
+describe("agenda .ics", () => {
+  it("gera eventos de dia inteiro só para tarefas com data, com escape e CRLF", () => {
+    const { product, tasks } = buildCriadorPng();
+    tasks[0].prazo = "2026-11-20";
+    tasks[0].title = "Conversar; com, donos";
+    const ics = buildIcs(product.name, tasks, new Date("2026-11-06T12:00:00Z"));
+    expect(ics.match(/BEGIN:VEVENT/g)).toHaveLength(1);
+    expect(ics).toContain("DTSTART;VALUE=DATE:20261120");
+    expect(ics).toContain("DTEND;VALUE=DATE:20261121");
+    expect(ics).toContain("Conversar\\; com\\, donos");
+    expect(ics.includes("\r\n")).toBe(true);
+    for (const line of ics.split("\r\n")) expect(new TextEncoder().encode(line).length).toBeLessThanOrEqual(75);
+  });
 });

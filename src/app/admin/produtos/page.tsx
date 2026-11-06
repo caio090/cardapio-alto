@@ -27,6 +27,9 @@ export default async function AdminProductsPage() {
           <h1 className="mt-1 text-2xl font-bold">Produtos</h1>
         </div>
         <div className="flex items-center gap-3">
+          <Link href="/admin/central" className="text-sm font-medium text-teal-800 hover:underline">
+            Central de Produtos
+          </Link>
           <Link
             href="/admin/produtos/novo"
             className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-black/80"

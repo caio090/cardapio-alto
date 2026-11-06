@@ -34,7 +34,7 @@ export async function loginAction(
     maxAge: ADMIN_SESSION_MAX_AGE_SECONDS,
   });
 
-  redirect("/admin/produtos");
+  redirect("/admin/central");
 }
 
 export async function logoutAction() {

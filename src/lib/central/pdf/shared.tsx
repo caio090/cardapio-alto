@@ -38,22 +38,23 @@ export const C = {
 };
 
 export const s = StyleSheet.create({
-  page: { fontFamily: "Inter", fontSize: 9.6, color: C.ink, paddingTop: 44, paddingBottom: 48, paddingHorizontal: 46, lineHeight: 1.45 },
+  page: { fontFamily: "Inter", fontSize: 9.6, color: C.ink, paddingTop: 44, paddingBottom: 48, paddingHorizontal: 46 },
+  // lineHeight fica nos textos (no Page ele faz o react-pdf descartar o rodapé fixo)
   kicker: { fontSize: 7.5, color: C.orange, fontWeight: 700, textTransform: "uppercase", marginBottom: 3 },
   h1: { fontSize: 19, fontWeight: 700, marginBottom: 8, lineHeight: 1.2 },
   h2: { fontSize: 12, fontWeight: 700, color: C.teal, marginTop: 12, marginBottom: 5 },
-  p: { marginBottom: 5 },
+  p: { marginBottom: 5, lineHeight: "14pt" },
   small: { fontSize: 8, color: C.muted },
   bulletRow: { flexDirection: "row", marginBottom: 2.5 },
   bulletDot: { width: 10, color: C.teal },
-  bulletText: { flex: 1 },
+  bulletText: { flex: 1, lineHeight: "14pt" },
   table: { borderWidth: 0.7, borderColor: C.line, marginVertical: 5 },
   tr: { flexDirection: "row", borderBottomWidth: 0.7, borderColor: C.line },
   th: { backgroundColor: C.tealSoft, fontWeight: 700 },
-  td: { padding: 4, flex: 1, fontSize: 8.6, borderRightWidth: 0.7, borderColor: C.line },
-  prompt: { fontFamily: "Mono", fontSize: 7.9, backgroundColor: C.code, borderLeftWidth: 2.5, borderColor: C.teal, padding: 7, marginVertical: 5, lineHeight: 1.5 },
+  td: { padding: 4, flex: 1, fontSize: 8.6, lineHeight: "12pt", borderRightWidth: 0.7, borderColor: C.line },
+  prompt: { fontFamily: "Mono", fontSize: 7.9, backgroundColor: C.code, borderLeftWidth: 2.5, borderColor: C.teal, padding: 7, marginVertical: 5, lineHeight: "12pt" },
   label: { fontFamily: "Inter", fontSize: 6.8, fontWeight: 700, color: "#fff", backgroundColor: C.teal, paddingHorizontal: 4, paddingVertical: 1.5, alignSelf: "flex-start", marginBottom: 4, borderRadius: 2 },
-  note: { padding: 7, borderRadius: 4, marginVertical: 6, borderWidth: 0.7 },
+  note: { padding: 7, borderRadius: 4, marginVertical: 6, borderWidth: 0.7, lineHeight: "14pt" },
   footer: { position: "absolute", bottom: 22, left: 46, right: 46, flexDirection: "row", justifyContent: "space-between", fontSize: 7, color: C.gray },
   link: { color: C.teal, textDecoration: "underline" },
 });
@@ -64,7 +65,7 @@ export function Bullets({ items }: { items: string[] }) {
       {items.map((it, i) => (
         <View key={i} style={s.bulletRow} wrap={false}>
           <Text style={s.bulletDot}>•</Text>
-          <Text style={s.bulletText}>{it}</Text>
+          <Text style={s.bulletText}>{pdfSafe(it)}</Text>
         </View>
       ))}
     </View>
@@ -77,7 +78,7 @@ export function Checklist({ items }: { items: string[] }) {
       {items.map((it, i) => (
         <View key={i} style={s.bulletRow} wrap={false}>
           <View style={{ width: 7, height: 7, borderWidth: 0.8, borderColor: C.teal, marginTop: 2.5, marginRight: 6 }} />
-          <Text style={s.bulletText}>{it}</Text>
+          <Text style={s.bulletText}>{pdfSafe(it)}</Text>
         </View>
       ))}
     </View>
@@ -100,7 +101,7 @@ export function Table({ rows, widths }: { rows: string[][]; widths?: number[] })
                 j === r.length - 1 ? { borderRightWidth: 0 } : {},
               ]}
             >
-              {cell}
+              {pdfSafe(cell)}
             </Text>
           ))}
         </View>
@@ -110,7 +111,7 @@ export function Table({ rows, widths }: { rows: string[][]; widths?: number[] })
 }
 
 /** Diagrama de fluxo: caixas ligadas por setas desenhadas em vetor. */
-export function Flow({ steps, colors }: { steps: string[]; colors?: string[] }) {
+export function Flow({ steps, colors, start = 1 }: { steps: string[]; colors?: string[]; start?: number }) {
   return (
     <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 8 }} wrap={false}>
       {steps.map((st, i) => (
@@ -128,7 +129,7 @@ export function Flow({ steps, colors }: { steps: string[]; colors?: string[] }) 
               justifyContent: "center",
             }}
           >
-            <Text style={{ fontSize: 6.6, color: C.orange, textAlign: "center", fontWeight: 700 }}>{i + 1}</Text>
+            <Text style={{ fontSize: 6.6, color: C.orange, textAlign: "center", fontWeight: 700 }}>{i + start}</Text>
             <Text style={{ fontSize: 7.4, textAlign: "center", fontWeight: 700 }}>{st}</Text>
           </View>
           {i < steps.length - 1 && (
@@ -140,6 +141,11 @@ export function Flow({ steps, colors }: { steps: string[]; colors?: string[] }) 
       ))}
     </View>
   );
+}
+
+/** Caracteres fora do subconjunto da fonte incorporada viram equivalentes legíveis. */
+export function pdfSafe(t: string): string {
+  return t.replace(/\u2192/g, "›").replace(/\u2190/g, "‹").replace(/[\u2713\u2714]/g, "•").replace(/\u2265/g, ">=").replace(/\u2264/g, "<=");
 }
 
 export function parseTable(text: string): string[][] {
@@ -167,7 +173,7 @@ export function RichText({ text }: { text: string }) {
         if (ls.every((l) => /^\s*[-•*]\s+/.test(l))) return <Bullets key={i} items={lines(b)} />;
         return (
           <Text key={i} style={s.p}>
-            {b}
+            {pdfSafe(b)}
           </Text>
         );
       })}

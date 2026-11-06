@@ -460,6 +460,8 @@ export interface PageCheckout {
   cadastroObservado: string;
   cadastroConfirmado: boolean;
   checks: Record<string, { ok: boolean; at?: string }>;
+  /** Leitura registrada da plataforma de pagamento (somente leitura, com fonte e data). */
+  leituraPlataforma?: { at: string; fonte: string; resumo: string; dados?: unknown };
 }
 
 export function emptyPage(): PageCheckout {
@@ -545,8 +547,10 @@ export interface ProductDoc extends BaseDoc {
   finance: FinanceInputs;
   page: PageCheckout;
   deliverable: DeliverableDoc;
-  drive: { folderId?: string; folderUrl?: string; folderName?: string; owner?: string; checkedAt?: string };
+  drive: { folderId?: string; folderUrl?: string; folderName?: string; owner?: string; permission?: string; checkedAt?: string };
   archived?: boolean;
+  /** Relatórios lidos da Meta (métricas da plataforma de anúncios, não pagamentos). */
+  metaReports?: import("./integrations/meta-types").MetaReportData[];
 }
 
 export type EvidenceKind =
@@ -585,6 +589,8 @@ export interface TaskDoc extends BaseDoc {
   dependsOn: string[];
   evidencia: string;
   order: number;
+  /** Data prevista (AAAA-MM-DD), opcional. Alimenta a agenda (.ics). */
+  prazo?: string;
 }
 
 export interface VersionDoc extends BaseDoc {

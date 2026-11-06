@@ -71,7 +71,9 @@
 /* Drenched orange, matching the official logo — not an inversion of a
    light theme, so the palette holds steady regardless of OS scheme. */
 
-* {
+/* A Central de Produtos (/admin/central) usa a paleta neutra do Tailwind:
+   esta regra fica fora dela para não sobrescrever as classes de borda. */
+*:not(.central-root, .central-root *) {
   border-color: var(--border);
 }
 

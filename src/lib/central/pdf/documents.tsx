@@ -13,7 +13,7 @@ import {
   type TaskDoc,
 } from "../model";
 import { computeFinance, type Calc } from "../logic";
-import { Bullets, C, Checklist, Flow, Footer, RichText, Table, lines, parseTable, registerFonts, s } from "./shared";
+import { Bullets, C, Checklist, Flow, Footer, RichText, Table, lines, parseTable, pdfSafe, registerFonts, s } from "./shared";
 
 const brl = (c: Calc) =>
   c.known ? c.value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : `não calculado — ${c.reason}`;
@@ -66,6 +66,7 @@ export async function renderCorpoPdf(input: {
           colors={STAGES.slice(0, 5).map((st) => stageColor[product.stages[st.key].status])}
         />
         <Flow
+          start={6}
           steps={STAGES.slice(5).map((st) => st.short)}
           colors={STAGES.slice(5).map((st) => stageColor[product.stages[st.key].status])}
         />
@@ -240,6 +241,8 @@ export async function renderDeliverablePdf(input: {
             {sec.body.trim() ? <RichText text={sec.body} /> : null}
             {img ? (
               <View style={{ marginVertical: 8 }} wrap={false}>
+                {/* react-pdf não tem atributo alt; a legenda abaixo descreve a imagem. */}
+                {/* eslint-disable-next-line jsx-a11y/alt-text */}
                 <Image src={{ data: img.data, format: img.format }} style={{ maxHeight: 260, objectFit: "contain" }} />
                 {sec.imageCaption ? <Text style={[s.small, { marginTop: 3 }]}>{sec.imageCaption}</Text> : null}
               </View>
@@ -249,7 +252,7 @@ export async function renderDeliverablePdf(input: {
             {sec.prompt.trim() ? (
               <View style={s.prompt} wrap={false}>
                 {sec.promptLabel ? <Text style={s.label}>{sec.promptLabel}</Text> : null}
-                <Text>{sec.prompt}</Text>
+                <Text>{pdfSafe(sec.prompt)}</Text>
               </View>
             ) : null}
             {sec.note.trim() ? (
@@ -262,7 +265,7 @@ export async function renderDeliverablePdf(input: {
                 ]}
                 wrap={false}
               >
-                <Text>{sec.note}</Text>
+                <Text>{pdfSafe(sec.note)}</Text>
               </View>
             ) : null}
             <Footer left={footer} />
@@ -281,7 +284,7 @@ export async function renderDeliverablePdf(input: {
             .map((x) => (
               <View key={x.id} style={s.prompt} wrap={false}>
                 <Text style={s.label}>{x.promptLabel || x.title}</Text>
-                <Text>{x.prompt}</Text>
+                <Text>{pdfSafe(x.prompt)}</Text>
               </View>
             ))
         )}

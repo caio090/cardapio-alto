@@ -42,7 +42,7 @@ export function createSupabaseStore(client: SupabaseClient): CentralStore {
         .eq("id", id)
         .maybeSingle();
       if (error) fail("ler", error);
-      return (data?.data as T) ?? null;
+      return ((data?.data as T | undefined) ?? null) as T | null;
     },
 
     async put<T extends BaseDoc>(collection: CollectionName, doc: T) {

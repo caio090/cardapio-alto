@@ -4,10 +4,6 @@ import { blankProduct, newId, now } from "./factory";
 
 export { blankProduct, newId, now };
 import {
-  emptyBody,
-  emptyFinance,
-  emptyPage,
-  emptyStages,
   emptySection,
   type CaseDoc,
   type CreativeDoc,

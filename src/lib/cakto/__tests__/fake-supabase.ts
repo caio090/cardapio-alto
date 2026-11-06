@@ -65,14 +65,18 @@ export function createFakeSupabase() {
         };
       },
       select() {
-        return {
-          eq: (col: string, val: unknown) => ({
-            maybeSingle: async () => {
-              const found = tables[table].find((r) => r[col] === val);
-              return { data: found ?? null, error: null };
-            },
-          }),
+        const filters: [string, unknown][] = [];
+        const builder = {
+          eq(col: string, val: unknown) {
+            filters.push([col, val]);
+            return builder;
+          },
+          async maybeSingle() {
+            const found = tables[table].find((r) => filters.every(([c, v]) => r[c] === v));
+            return { data: found ?? null, error: null };
+          },
         };
+        return builder;
       },
     };
   }

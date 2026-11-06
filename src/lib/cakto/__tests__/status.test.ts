@@ -18,3 +18,20 @@ describe("mapCaktoEventToStatus", () => {
     expect(mapCaktoEventToStatus("something_cakto_adds_later")).toBe("unknown");
   });
 });
+
+import { resolveStatus } from "../status";
+
+describe("resolveStatus (entregas fora de ordem)", () => {
+  it.each([
+    ["paid", "pending", "paid"],
+    ["paid", "abandoned", "paid"],
+    ["canceled", "paid", "paid"],
+    ["paid", "refunded", "refunded"],
+    ["refunded", "paid", "refunded"],
+    ["refund_requested", "paid", "paid"],
+    ["paid", "unknown", "paid"],
+    [null, "pending", "pending"],
+  ] as const)("%s + %s → %s", (current, incoming, expected) => {
+    expect(resolveStatus(current, incoming)).toBe(expected);
+  });
+});

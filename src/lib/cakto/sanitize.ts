@@ -22,6 +22,9 @@ function sanitizeItem(item: unknown): unknown {
   const clone: Record<string, unknown> = { ...item };
   if ("customer" in clone) clone.customer = sanitizeCustomer(clone.customer);
   if ("card" in clone) clone.card = REDACTED;
+  // Endereço não é necessário para auditar o evento.
+  if ("address" in clone && clone.address) clone.address = REDACTED;
+  if ("shipping" in clone && clone.shipping) clone.shipping = REDACTED;
   return clone;
 }
 
@@ -33,6 +36,9 @@ export function sanitizeCaktoPayload(payload: unknown): unknown {
 
   if (Array.isArray(clone.data)) {
     clone.data = clone.data.map(sanitizeItem);
+  } else if (isPlainObject(clone.data)) {
+    // Webhook V1 entrega `data` como objeto — sanitizar do mesmo jeito.
+    clone.data = sanitizeItem(clone.data);
   }
 
   return clone;

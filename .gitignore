@@ -40,3 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .tmp-dev.log
+
+# Central de Produtos — dados locais de desenvolvimento (nunca versionar)
+/.central-data/

@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { reaisToCents } from "./money";
-import { mapCaktoEventToStatus } from "./status";
-import type { CaktoDataItem, CaktoWebhookPayload } from "./types";
+import { mapCaktoEventToStatus, resolveStatus } from "./status";
+import type { CaktoDataItem, CaktoWebhookPayload, OrderStatus } from "./types";
 
 export interface ProcessResult {
   ordersUpserted: number;
@@ -24,7 +24,9 @@ function pickMainItem(items: CaktoDataItem[]): CaktoDataItem {
 function groupByCheckout(items: CaktoDataItem[]): Map<string, CaktoDataItem[]> {
   const groups = new Map<string, CaktoDataItem[]>();
   for (const item of items) {
-    const key = String(item.checkout);
+    // `checkout` pode vir nulo (doc oficial: integer | null). Sem ele, cada
+    // pedido é seu próprio grupo — nunca juntar pedidos diferentes sob "null".
+    const key = item.checkout !== null && item.checkout !== undefined && item.checkout !== "" ? String(item.checkout) : `order:${item.id}`;
     const list = groups.get(key);
     if (list) {
       list.push(item);
@@ -61,14 +63,23 @@ export async function processCaktoWebhook(
   payload: CaktoWebhookPayload,
   admin: SupabaseClient
 ): Promise<ProcessResult> {
-  const status = mapCaktoEventToStatus(payload.event);
-  const groups = groupByCheckout(payload.data);
+  const incoming = mapCaktoEventToStatus(payload.event);
+  // Itens sem id (ex.: checkout_abandonment) não são pedidos e não entram aqui.
+  const groups = groupByCheckout(payload.data.filter((item) => typeof item?.id === "string" && item.id));
 
   let ordersUpserted = 0;
   let itemsUpserted = 0;
 
   for (const [checkoutId, items] of groups) {
     const main = pickMainItem(items);
+
+    const { data: existingOrder } = await admin
+      .from("orders")
+      .select("id,status")
+      .eq("provider", "cakto")
+      .eq("cakto_checkout_id", checkoutId)
+      .maybeSingle();
+    const status = resolveStatus((existingOrder?.status as OrderStatus | undefined) ?? null, incoming);
 
     const orderRow = {
       provider: "cakto",
@@ -107,6 +118,12 @@ export async function processCaktoWebhook(
 
     for (const item of items) {
       const productId = await findProductIdByCaktoId(admin, item.product?.id);
+      const { data: existingItem } = await admin
+        .from("order_items")
+        .select("id,status")
+        .eq("cakto_item_id", item.id)
+        .maybeSingle();
+      const itemStatus = resolveStatus((existingItem?.status as OrderStatus | undefined) ?? null, incoming);
 
       const itemRow = {
         order_id: order.id,
@@ -126,7 +143,7 @@ export async function processCaktoWebhook(
         discount_cents: reaisToCents(item.discount),
         amount_cents: reaisToCents(item.amount),
         fees_cents: reaisToCents(item.fees),
-        status,
+        status: itemStatus,
       };
 
       const { error: itemError } = await admin

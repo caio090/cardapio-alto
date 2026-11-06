@@ -33,7 +33,7 @@ export interface CaktoDataItem {
   offer?: CaktoOffer | null;
   offer_type?: string | null;
   product?: CaktoProduct | null;
-  checkout: string | number;
+  checkout?: string | number | null;
   parent_order?: string | null;
   checkoutUrl?: string | null;
   status?: string | null;
@@ -70,6 +70,8 @@ export interface CaktoDataItem {
 export interface CaktoWebhookPayload {
   secret: string;
   event: string;
+  // Webhook V1 (criado pela API) manda um objeto; V2 (criado no painel) manda
+  // uma lista com principal + order bump/upsell. O receptor normaliza para lista.
   data: CaktoDataItem[];
 }
 
@@ -80,4 +82,6 @@ export type OrderStatus =
   | "abandoned"
   | "refunded"
   | "chargeback"
+  | "canceled"
+  | "refund_requested"
   | "unknown";
